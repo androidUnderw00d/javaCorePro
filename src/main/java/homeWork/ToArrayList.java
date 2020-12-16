@@ -2,7 +2,6 @@ package homeWork;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 
 public class ToArrayList<E extends Object> {
     private E[] data;
@@ -20,17 +19,21 @@ public class ToArrayList<E extends Object> {
 
     private static void ConvertoList() {
 
-        var stringStorage = new ToArrayList<String>(3);
+        Integer[] intStorage = {1, 2, 3};
+        Double[] doublesStorage = {1.0, 2.0, 3.0};
+        String[] stringStorage = {"A", "B", "C"};
 
-        stringStorage.add("A");
-        stringStorage.add("B");
-        stringStorage.add("C");
+//        var stringStorage = new ToArrayList<String>(3);
 
-        var intStorage = new ToArrayList<Integer>(3);
+//        stringStorage.add("A");
+//        stringStorage.add("B");
+//        stringStorage.add("C");
 
-        intStorage.add(1);
-        intStorage.add(2);
-        intStorage.add(3);
+//        var intStorage = new ToArrayList<Integer>(3);
+
+//        intStorage.add(1);
+//        intStorage.add(2);
+//        intStorage.add(3);
 
         arrayToArrayList(stringStorage);
         System.out.println(Arrays.toString(stringStorage));
@@ -46,7 +49,7 @@ public class ToArrayList<E extends Object> {
         currentSize++;
     }
 
-    private static arrayToArrayList(E[] array) {
+    private static <E> ArrayList arrayToArrayList(E[] array) {
         return new ArrayList<>(Arrays.asList(array));
     }
 }
