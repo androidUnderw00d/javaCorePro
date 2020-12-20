@@ -11,6 +11,7 @@ public class Main {
     private static Connection connection;
     private static Statement stmt;
     private static ResultSet rs;
+    private static PreparedStatement pstmt;
 
 
     public static void main(String[] args) {
@@ -39,8 +40,25 @@ public class Main {
         }
 
         try {
+            long t = System.currentTimeMillis();
             updateGood();
             System.out.println("Таблица товаров создана");
+            System.out.println("Время выполнения: " + (System.currentTimeMillis() - t));
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        try {
+            clearGood();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        try {
+            long t = System.currentTimeMillis();
+            batchupdateGood();
+            System.out.println("Таблица товаров создана");
+            System.out.println("Время выполнения: " + (System.currentTimeMillis() - t));
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -109,7 +127,7 @@ public class Main {
 
     private static void updateGood() throws SQLException {
 
-        for (int i = 1; i <= 10000; i++) {
+        for (int i = 0; i < 10000; i++) {
             int cost = (int) (Math.random() * maxPrice);
             BigDecimal result = new BigDecimal(cost);
             result = result.setScale(2, RoundingMode.DOWN);
@@ -117,13 +135,26 @@ public class Main {
         }
     }
 
+    private static void batchupdateGood() throws SQLException {
+        pstmt = connection.prepareStatement("INSERT INTO good('good_id','good_name', 'good_price')" + "VALUES (?, ?, ?)");
+        connection.setAutoCommit(false); //автосинхронизация с базой
+        for (int i = 0; i < 10000; i++) {
+            pstmt.setInt(1, i);
+            pstmt.setString(2, "good" + i);
+            pstmt.setInt(3,  (int)(Math.random() * 5000));
+            pstmt.addBatch();
+        }
+        pstmt.executeBatch();
+        connection.setAutoCommit(true);
+    }
+
     private static void findOutPrice() throws SQLException {
         Scanner sc = new Scanner(System.in);
         System.out.println("Цену какого товара нужно узнать?");
         String scanString = sc.nextLine();
-        PreparedStatement psPrice = connection.prepareStatement("SELECT good_price FROM good WHERE good_name = ?;");
-        psPrice.setString(1, scanString);
-        rs = psPrice.executeQuery();
+        pstmt = connection.prepareStatement("SELECT good_price FROM good WHERE good_name = ?;");
+        pstmt.setString(1, scanString);
+        rs = pstmt.executeQuery();
         System.out.println("Стоимость товара = " + rs.getString(1));
 //        sc.close(); //оставляю поток открытым чтобы не бросил ошибку следующий метод
     }
@@ -134,19 +165,19 @@ public class Main {
         String scanName = sc.nextLine();
         System.out.println("Введите новую цену:");
         int scanPrice = sc.nextInt();
-        PreparedStatement psChange = connection.prepareStatement("UPDATE good SET good_price = ?  WHERE good_name = ?");
-        psChange.setInt(1, scanPrice);
-        psChange.setString(2, scanName);
-        psChange.executeUpdate();
+        pstmt = connection.prepareStatement("UPDATE good SET good_price = ?  WHERE good_name = ?");
+        pstmt.setInt(1, scanPrice);
+        pstmt.setString(2, scanName);
+        pstmt.executeUpdate();
         sc.close();
     }
 
     private static void goodsInРriceRange(double minPrice, double maxPrice) throws SQLException {
         String sqlQuery = "SELECT good_id, good_name, good_price FROM good WHERE good_price >= ? and good_price <= ?;";
-        PreparedStatement psGoodsInРriceRange = connection.prepareStatement(sqlQuery);
-        psGoodsInРriceRange.setDouble(1, minPrice);
-        psGoodsInРriceRange.setDouble(2, maxPrice);
-        rs = psGoodsInРriceRange.executeQuery();
+        pstmt = connection.prepareStatement(sqlQuery);
+        pstmt.setDouble(1, minPrice);
+        pstmt.setDouble(2, maxPrice);
+        rs = pstmt.executeQuery();
         while (rs.next()){
             System.out.println(rs.getInt(1) + "\t" + rs.getString(2) + "\t" + rs.getDouble(3));
         }
