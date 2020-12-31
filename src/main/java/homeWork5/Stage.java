@@ -7,4 +7,5 @@ public abstract class Stage {
         return description;
     }
     public abstract void go(Car c);
+
 }

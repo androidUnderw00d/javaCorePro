@@ -41,4 +41,5 @@ public class Car implements Runnable {
             race.getStages().get(i).go(this);
         }
     }
+
 }
