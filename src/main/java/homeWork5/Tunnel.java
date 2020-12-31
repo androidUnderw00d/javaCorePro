@@ -1,17 +1,16 @@
 package homeWork5;
 
-import java.util.concurrent.Semaphore;
+import static homeWork5.Main.smp;
 
 public class Tunnel extends Stage {
     public Tunnel() {
         this.length = 80;
         this.description = "Тоннель " + length + " метров";
     }
+
     @Override
     public void go(Car c) {
-
         try {
-            Semaphore smp = new Semaphore( 2 );
             try {
                 System.out.println(c.getName() + " готовится к этапу(ждет): " + description);
                 smp.acquire();

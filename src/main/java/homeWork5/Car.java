@@ -1,8 +1,9 @@
 package homeWork5;
 
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.BrokenBarrierException;
+
+import static homeWork5.Main.cb;
+import static homeWork5.Main.cdl;
 
 public class Car implements Runnable {
     private static int CARS_COUNT;
@@ -26,12 +27,13 @@ public class Car implements Runnable {
     }
     @Override
     public void run() {
-        Lock lock = new ReentrantLock();
         try {
-            lock.lock();
             System.out.println(this.name + " готовится");
             Thread.sleep(500 + (int)(Math.random() * 800));
             System.out.println(this.name + " готов");
+            cb.await();
+            cdl.countDown();
+            cdl.await();
         } catch (Exception e) {
             e.printStackTrace();
         }

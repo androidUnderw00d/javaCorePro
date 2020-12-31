@@ -1,7 +1,5 @@
 package homeWork5;
 
-import java.util.concurrent.*;
-
 public class Road extends Stage {
     public Road(int length) {
         this.length = length;
@@ -12,6 +10,10 @@ public class Road extends Stage {
         try {
             System.out.println(c.getName() + " начал этап: " + description);
             Thread.sleep(length / c.getSpeed() * 1000);
+            if (description.equals("Дорога 40 метров")){
+                boolean winner = true;
+                System.out.println(c.getName() + " Win");
+            }
             System.out.println(c.getName() + " закончил этап: " + description);
         } catch (InterruptedException e) {
             e.printStackTrace();
