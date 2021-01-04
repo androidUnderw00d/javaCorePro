@@ -1,14 +1,11 @@
 package homeWork5;
 
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.Semaphore;
 
 public class Main {
     public static final int CARS_COUNT = 4;
-    public static final CyclicBarrier cb = new CyclicBarrier(CARS_COUNT);
-    public static final Semaphore smp = new Semaphore(2, true);
-    public static final CountDownLatch cdl = new CountDownLatch(CARS_COUNT + 1);
+    public static final CyclicBarrier cb = new CyclicBarrier(CARS_COUNT + 1); //CyclincBarrier для 4 участников и главного потока
 
     public static void main(String[] args) {
         System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Подготовка!!!");
@@ -20,18 +17,18 @@ public class Main {
         for (int i = 0; i < cars.length; i++) {
             new Thread(cars[i]).start();
         }
-        while (cdl.getCount() > 1) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
+        try {
+            cb.await(); //ждем 4 машины + главный поток
+            System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка началась!!!");
+            cb.await(); //ждем 4 гонки + главный поток
+            System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка закончилась!!!");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (BrokenBarrierException e) {
+            e.printStackTrace();
         }
 
-        System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка началась!!!");
-        cdl.countDown();
-
-        System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка закончилась!!!");
     }
 }
 

@@ -1,12 +1,14 @@
 package homeWork5;
 
-import static homeWork5.Main.smp;
+import java.util.concurrent.Semaphore;
 
 public class Tunnel extends Stage {
     public Tunnel() {
         this.length = 80;
         this.description = "Тоннель " + length + " метров";
     }
+
+    public static final Semaphore smp = new Semaphore(2, true);
 
     @Override
     public void go(Car c) {
@@ -20,7 +22,7 @@ public class Tunnel extends Stage {
                 e.printStackTrace();
             } finally {
                 System.out.println(c.getName() + " закончил этап: " + description);
-                smp.release();
+                smp.release(); // одновременно могут быть запущено только 2 потока
             }
         } catch (Exception e) {
             e.printStackTrace();
